@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"deuvox/internal/app"
+	"fmt"
+	"net/http"
+)
 
 func main() {
-	fmt.Println("Hello World!")
+	app := app.New()
+	fmt.Println("Run in localhost:3000")
+	http.ListenAndServe(":3000", app.R)
 }
