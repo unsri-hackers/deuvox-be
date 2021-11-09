@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  api:
+    container_name: api
+    image: golang:1.17
+    restart: on-failure
+    volumes:
+      - ./:/deuvox-be
+    working_dir: /deuvox-be
+    command: /bin/bash -c "go run cmd/main.go"
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_ADDR=postgres
+    depends_on:
+      - postgres
+      - adminer
+      - migrate
+
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    restart: on-failure
+    ports:
+      - "5431:5432"
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+  
+  adminer:
+    container_name: adminer
+    image: adminer:standalone
+    restart: on-failure
+    ports:
+      - "8081:8080"
+
+  migrate:
+    image: migrate/migrate
+    restart: on-failure
+    volumes:
+      - ./pkg/db/migrations:/migrations
+    command:
+      [
+        '-path',
+        '/migrations',
+        '-database',
+        'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}?sslmode=disable',
+        'up',
+      ]
+    depends_on:
+      - postgres
