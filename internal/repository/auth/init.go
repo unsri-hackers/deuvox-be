@@ -1,14 +1,24 @@
 package auth
 
-import "database/sql"
+import (
+	"database/sql"
+	"deuvox/pkg/db"
+	"deuvox/pkg/db/postgres"
+)
 
 type Repository struct {
-	PostgresDB *sql.DB
+	UserStore     db.UserStore
+	ProfileStore  db.ProfileStore
+	PasswordStore db.PasswordStore
+	SessionStore  db.SessionStore
 }
 
 // TODO: ini untuk dependancy injection yang diperlukan db
 func New(postgresDB *sql.DB) *Repository {
 	return &Repository{
-		PostgresDB: postgresDB,
+		UserStore:     postgres.NewUserStore(postgresDB),
+		ProfileStore:  postgres.NewProfileStore(postgresDB),
+		PasswordStore: postgres.NewPasswordStore(postgresDB),
+		SessionStore:  postgres.NewSessionStore(postgresDB),
 	}
 }

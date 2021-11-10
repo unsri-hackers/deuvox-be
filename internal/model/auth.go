@@ -1,5 +1,7 @@
 package model
 
+import "deuvox/pkg/jwt"
+
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -17,5 +19,6 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	Token string `json:"token"`
+	AccessToken  *jwt.Token `json:"access_token"`
+	RefreshToken *jwt.Token `json:"refresh_token"`
 }

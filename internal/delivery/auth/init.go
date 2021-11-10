@@ -1,12 +1,13 @@
 package auth
 
 import (
+	"context"
 	"deuvox/internal/model"
 )
 
 type authUC interface {
 	Login(body model.LoginRequest) (model.LoginResponse, error)
-	Register(body model.RegisterRequest) (model.RegisterResponse, error)
+	Register(ctx context.Context, body model.RegisterRequest) (model.RegisterResponse, error)
 }
 
 type Delivery struct {

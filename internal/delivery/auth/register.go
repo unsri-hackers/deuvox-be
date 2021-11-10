@@ -10,6 +10,7 @@ import (
 )
 
 func (d *Delivery) Register(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var body model.RegisterRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -36,7 +37,7 @@ func (d *Delivery) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := d.auth.Register(body)
+	res, err := d.auth.Register(ctx, body)
 	if err != nil {
 		e, ok := err.(*derror.DError)
 		if !ok {
