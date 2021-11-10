@@ -1,13 +1,16 @@
 package app
 
-import "deuvox/internal/usecase/auth"
+import (
+	"database/sql"
+	"deuvox/internal/usecase/auth"
+)
 
 type usecase struct {
 	auth *auth.Usecase
 }
 
-func initUsecase() *usecase {
-	r := initRepository()
+func initUsecase(postgresDB *sql.DB) *usecase {
+	r := initRepository(postgresDB)
 	return &usecase{
 		auth: auth.New(r.auth),
 	}

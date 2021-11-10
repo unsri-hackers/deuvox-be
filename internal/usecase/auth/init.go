@@ -1,11 +1,13 @@
 package auth
 
 import (
+	"context"
 	"deuvox/internal/model"
 )
 
 type authRepo interface {
 	IsAuthValid(req model.LoginRequest) bool
+	AddNewUser(ctx context.Context, req model.RegisterRequest) (string, string, error)
 }
 
 type Usecase struct {
