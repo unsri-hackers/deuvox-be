@@ -6,6 +6,7 @@ import (
 
 type authRepo interface {
 	IsAuthValid(req model.LoginRequest) bool
+	AddNewUser(req model.RegisterRequest) bool
 }
 
 type Usecase struct {

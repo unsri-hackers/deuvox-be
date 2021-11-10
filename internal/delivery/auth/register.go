@@ -9,8 +9,8 @@ import (
 	"net/mail"
 )
 
-func (d *Delivery) Login(w http.ResponseWriter, r *http.Request) {
-	var body model.LoginRequest
+func (d *Delivery) Register(w http.ResponseWriter, r *http.Request) {
+	var body model.RegisterRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		response.Write(w, http.StatusBadRequest, "Invalid body request.", nil, "AUTH-DLV-01")
@@ -36,7 +36,7 @@ func (d *Delivery) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := d.auth.Login(body)
+	res, err := d.auth.Register(body)
 	if err != nil {
 		e, ok := err.(*derror.DError)
 		if !ok {
@@ -46,6 +46,5 @@ func (d *Delivery) Login(w http.ResponseWriter, r *http.Request) {
 		response.Write(w, http.StatusBadRequest, e.Error(), nil, e.ErrorCode)
 		return
 	}
-	response.Write(w, http.StatusOK, "Login successful", res, "")
-	return
+	response.Write(w, http.StatusOK, "Register successful", res, "")
 }

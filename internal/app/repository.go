@@ -1,13 +1,16 @@
 package app
 
-import "deuvox/internal/repository/auth"
+import (
+	"database/sql"
+	"deuvox/internal/repository/auth"
+)
 
 type repository struct {
 	auth *auth.Repository
 }
 
-func initRepository() *repository {
+func initRepository(postgresDB *sql.DB) *repository {
 	return &repository{
-		auth: auth.New(),
+		auth: auth.New(postgresDB),
 	}
 }
