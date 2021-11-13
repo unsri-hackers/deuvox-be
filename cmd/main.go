@@ -24,8 +24,12 @@ func main() {
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 		Database: os.Getenv("POSTGRES_DB"),
 	}
+	log.Info().Msg("get connection to postgres")
+	postgre, err := postgres.NewPG(postgresCfg)
+	if err != nil {
+		log.Error().Err(err).Stack().Msg("failed to connect to postgres")
+	}
 
-	app := app.New(serverCfg, postgresCfg)
-	log.Info().Msg("Starting api server in localhost:8080")
+	app := app.New(serverCfg, postgre)
 	app.StartServer()
 }

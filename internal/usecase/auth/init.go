@@ -6,8 +6,9 @@ import (
 )
 
 type authRepo interface {
-	IsAuthValid(req model.LoginRequest) bool
+	GetUserByEmail(email string) (model.User, error)
 	AddNewUser(ctx context.Context, req model.RegisterRequest) (string, string, error)
+	InsertNewSession(jti, userID, client, ip string) error
 }
 
 type Usecase struct {

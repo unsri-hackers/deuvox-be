@@ -1,7 +1,6 @@
 package app
 
 import (
-	"database/sql"
 	"deuvox/internal/delivery/auth"
 )
 
@@ -9,9 +8,10 @@ type delivery struct {
 	auth *auth.Delivery
 }
 
-func initDelivery(db *sql.DB) delivery {
-	u := initUsecase(db)
-	return delivery{
-		auth: auth.New(u.auth),
-	}
+func (a *App) initDelivery() {
+	var delivery delivery
+	delivery.auth = auth.New(a.usecase.auth)
+
+	a.delivery = delivery
+
 }

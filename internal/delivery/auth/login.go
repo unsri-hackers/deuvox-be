@@ -35,6 +35,8 @@ func (d *Delivery) Login(w http.ResponseWriter, r *http.Request) {
 		response.Write(w, http.StatusBadRequest, "Password is too short.", nil, "AUTH-DLV-05")
 		return
 	}
+	body.IP = r.RemoteAddr
+	body.UserAgent = r.UserAgent()
 
 	res, err := d.auth.Login(body)
 	if err != nil {
