@@ -9,8 +9,8 @@ type repository struct {
 	auth *auth.Repository
 }
 
-func initRepository(postgresDB *sql.DB) *repository {
-	return &repository{
-		auth: auth.New(postgresDB),
-	}
+func (a *App) initRepository(db *sql.DB) {
+	var repository repository
+	repository.auth = auth.New(db)
+	a.repository = repository
 }

@@ -7,9 +7,11 @@ import (
 	"fmt"
 )
 
-func (r *Repository) IsAuthValid(req model.LoginRequest) bool {
-	// TODO: ini ngambil data dari DB, terus ngecek email dan passwordnya bener atau nggak
-	return true
+func (r *Repository) GetUserByEmail(email string) (model.User, error) {
+	return r.datapsql.GetUserByEmail(email)
+}
+func (r *Repository) InsertNewSession(jti, userID, client, ip string) error {
+	return r.datapsql.InsertNewSession(jti, userID, client, ip)
 }
 
 func (r *Repository) AddNewUser(ctx context.Context, req model.RegisterRequest) (string, string, error) {

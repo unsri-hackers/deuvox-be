@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"database/sql"
-	"deuvox/pkg/db/postgres"
 	"deuvox/pkg/handler"
 	"deuvox/pkg/response"
 	"fmt"
@@ -27,27 +26,25 @@ type AppConfig struct {
 }
 
 type App struct {
-	Config AppConfig
-	DB     *sql.DB
+	Config     AppConfig
+	delivery   delivery
+	usecase    usecase
+	repository repository
 }
 
-func New(serverCfg AppConfig, postgresCfg postgres.PostgresConfig) App {
+func New(serverCfg AppConfig, db *sql.DB) App {
 
-	log.Info().Msg("get connection to postgres")
-	postgre, err := postgres.NewPG(postgresCfg)
-	if err != nil {
-		log.Error().Err(err).Stack().Msg("failed to connect to postgres")
-	}
-
-	return App{
-		Config: serverCfg,
-		DB:     postgre,
-	}
+	var app App
+	app.initRepository(db)
+	app.initUsecase()
+	app.initDelivery()
+	app.Config = serverCfg
+	return app
 }
 
 func (app *App) createHandlers() http.Handler {
 	r := chi.NewRouter()
-	d := initDelivery(app.DB)
+	d := app.delivery
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -95,13 +92,12 @@ func (app *App) StartServer() {
 		shutdownCtx, cancelShutdownTimeout = context.WithTimeout(shutdownCtx, app.Config.ShutdownTimeout)
 		defer cancelShutdownTimeout()
 	}
-
+	log.Info().Msg(fmt.Sprintf("serving %s\n", address))
 	err := server.ListenAndServe()
 	if err != http.ErrServerClosed {
 		log.Fatal().Err(err).Stack().Msg("cannot start server")
 	}
 
-	log.Info().Msg(fmt.Sprintf("serving %s\n", address))
 	go func(srv *http.Server) {
 		<-osSignalChan
 		err := srv.Shutdown(shutdownCtx)
