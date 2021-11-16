@@ -80,7 +80,7 @@ func (ja *JWTAuth) Authenticator(next http.Handler) http.Handler {
 }
 
 func (ja *JWTAuth) CreateToken(jti string, userId string, minute int) (*Token, error) {
-	expires_at := time.Now().Add(time.Duration(minute) * time.Minute)
+	expires_at := time.Now().Add(time.Duration(minute) * time.Minute).Unix()
 
 	accessTokenClaims := make(map[string]interface{})
 	accessTokenClaims["id"] = jti
