@@ -64,6 +64,8 @@ func (app *App) createHandlers() http.Handler {
 			r.Post("/register", d.auth.Register)
 			r.Post("/login", d.auth.Login)
 		})
+
+		r.Get("/token", d.auth.Token)
 	})
 
 	return r

@@ -5,6 +5,7 @@ import (
 	"deuvox/internal/model"
 	"deuvox/pkg/derror"
 	"deuvox/pkg/jwt"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
@@ -60,6 +61,35 @@ func (u *Usecase) Register(ctx context.Context, body model.RegisterRequest) (mod
 	refreshToken, err := jwt.New().CreateToken(jti, userId, jwt.RefreshTokenExpiration)
 	if err != nil {
 		return result, derror.New("Error create jwt access token.", "AUTH-USC-03")
+	}
+
+	result.AccessToken = accessToken
+	result.RefreshToken = refreshToken
+
+	return result, nil
+}
+
+func (u *Usecase) Token(ctx context.Context, token string) (model.RegisterResponse, error) {
+	var result model.RegisterResponse
+
+	tokenValue, err := jwt.New().VerifyToken(token)
+	if err != nil {
+		log.Error().Err(err).Stack().Msg(err.Error())
+		return result, derror.New(err.Error(), "AUTH-USC-04")
+	}
+
+	userId, _ := tokenValue.Get("userId")
+	jti, _ := tokenValue.Get("id")
+
+	accessToken, err := jwt.New().CreateToken(fmt.Sprintf("%v", jti), fmt.Sprintf("%v", userId), jwt.AccessTokenExpiration)
+	if err != nil {
+		log.Error().Err(err).Stack().Msg("Error create jwt access token")
+		return result, derror.New("Error create jwt access token.", "AUTH-USC-04")
+	}
+
+	refreshToken, err := jwt.New().CreateToken(fmt.Sprintf("%v", jti), fmt.Sprintf("%v", userId), jwt.RefreshTokenExpiration)
+	if err != nil {
+		return result, derror.New("Error create jwt access token.", "AUTH-USC-04")
 	}
 
 	result.AccessToken = accessToken

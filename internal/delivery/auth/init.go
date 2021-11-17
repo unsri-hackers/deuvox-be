@@ -8,6 +8,7 @@ import (
 type authUC interface {
 	Login(body model.LoginRequest) (model.LoginResponse, error)
 	Register(ctx context.Context, body model.RegisterRequest) (model.RegisterResponse, error)
+	Token(ctx context.Context, token string) (model.RegisterResponse, error)
 }
 
 type Delivery struct {
