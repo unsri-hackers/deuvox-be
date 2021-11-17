@@ -15,8 +15,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	AccessToken  *jwt.Token `json:"access_token"`
-	RefreshToken *jwt.Token `json:"refresh_token"`
+	AccessToken  jwt.Token `json:"access_token"`
+	RefreshToken jwt.Token `json:"refresh_token"`
 }
 
 type RegisterRequest struct {
