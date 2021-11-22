@@ -48,7 +48,7 @@ services:
     image: migrate/migrate
     restart: on-failure
     volumes:
-      - ./pkg/db/migrations:/migrations
+      - ./sql/migrations:/migrations
     command:
       [
         '-path',

@@ -32,9 +32,13 @@ func TestDelivery_Login(t *testing.T) {
 	defer ctrl.Finish()
 	m := mock.NewMockauthUC(ctrl)
 
+	a := struct {
+		Email int `json:"email"`
+	}{123}
+
 	testCase := []struct {
 		name       string
-		body       model.LoginRequest
+		body       interface{}
 		ucCalled   bool
 		ucError    error
 		wantStatus int
@@ -42,6 +46,7 @@ func TestDelivery_Login(t *testing.T) {
 		{"success", model.LoginRequest{Email: "test@test.com", Password: "testyttttttttt"}, true, nil, http.StatusOK},
 		{"empty email", model.LoginRequest{}, false, nil, http.StatusBadRequest},
 		{"invalid email", model.LoginRequest{Email: "LUL"}, false, nil, http.StatusBadRequest},
+		{"invalid body", a, false, nil, http.StatusBadRequest},
 		{"empty password", model.LoginRequest{Email: "test@test.com", Password: ""}, false, nil, http.StatusBadRequest},
 		{"short password", model.LoginRequest{Email: "test@test.com", Password: "LUL"}, false, nil, http.StatusBadRequest},
 		{"uc derror", model.LoginRequest{Email: "test@test.com", Password: "testyttttttttt"}, true, derror.New("", ""), http.StatusBadRequest},
@@ -57,6 +62,7 @@ func TestDelivery_Login(t *testing.T) {
 			if tc.ucCalled {
 				m.EXPECT().Login(gomock.Any()).Return(model.LoginResponse{}, tc.ucError)
 			}
+
 			res := initRequest(req, m).Result()
 
 			assert.Equal(t, tc.wantStatus, res.StatusCode)

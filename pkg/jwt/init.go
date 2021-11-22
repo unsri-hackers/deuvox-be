@@ -102,7 +102,7 @@ func createToken(tokenType string, userID string) (Token, string, error) {
 	t.Set(jwt.JwtIDKey, jti)
 	t.Set(jwt.SubjectKey, userID)
 
-	sign, err := jwt.Sign(t, jwa.HS256, os.Getenv("JWT_SIGN"))
+	sign, err := jwt.Sign(t, jwa.HS256, []byte(os.Getenv("JWT_SIGN")))
 	if err != nil {
 		return tok, jti, err
 	}
