@@ -32,10 +32,6 @@ func (d *Delivery) Register(w http.ResponseWriter, r *http.Request) {
 		response.Write(w, http.StatusBadRequest, "Password cannot be empty.", nil, "AUTH-DLV-04")
 		return
 	}
-	if len(body.Password) < 8 {
-		response.Write(w, http.StatusBadRequest, "Password is too short.", nil, "AUTH-DLV-05")
-		return
-	}
 
 	res, err := d.auth.Register(ctx, body)
 	if err != nil {

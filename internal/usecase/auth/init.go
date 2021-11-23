@@ -7,8 +7,10 @@ import (
 
 type authRepo interface {
 	GetUserByEmail(email string) (model.User, error)
-	AddNewUser(ctx context.Context, req model.RegisterRequest) (string, string, error)
 	InsertNewSession(jti, userID, client, ip string) error
+	InsertNewUser(ctx context.Context, id, email, password string) error
+	InsertNewProfile(ctx context.Context, id, userId, fullname string) error
+	InsertNewPassword(ctx context.Context, id, userId, password string) error
 }
 
 type Usecase struct {

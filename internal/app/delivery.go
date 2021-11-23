@@ -13,5 +13,4 @@ func (a *App) initDelivery() {
 	delivery.auth = auth.New(a.usecase.auth)
 
 	a.delivery = delivery
-
 }
