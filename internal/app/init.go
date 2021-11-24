@@ -12,9 +12,10 @@ import (
 	"syscall"
 	"time"
 
+	"deuvox/pkg/log"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/rs/zerolog/log"
 )
 
 type AppConfig struct {
@@ -35,18 +36,22 @@ type App struct {
 func New(serverCfg AppConfig, db *sql.DB) App {
 
 	var app App
+	log.Info().Msg("Initilize repository")
 	app.initRepository(db)
+	log.Info().Msg("Initilize usecase")
 	app.initUsecase()
+	log.Info().Msg("Initilize delivery")
 	app.initDelivery()
 	app.Config = serverCfg
 	return app
 }
 
 func (app *App) createHandlers() http.Handler {
+	log.Info().Msg("Initilize router and handler")
+
 	r := chi.NewRouter()
 	d := app.delivery
 
-	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.NotFound(handler.NotFound)
 	r.MethodNotAllowed(handler.MethodNotAllowed)
@@ -94,17 +99,17 @@ func (app *App) StartServer() {
 		shutdownCtx, cancelShutdownTimeout = context.WithTimeout(shutdownCtx, app.Config.ShutdownTimeout)
 		defer cancelShutdownTimeout()
 	}
-	log.Info().Msg(fmt.Sprintf("serving %s\n", address))
+	log.Info().Msgf("Listening server on %s", address)
 	err := server.ListenAndServe()
 	if err != http.ErrServerClosed {
-		log.Fatal().Err(err).Stack().Msg("cannot start server")
+		log.Panic().Err(err).Msg("Failed to start server")
 	}
 
 	go func(srv *http.Server) {
 		<-osSignalChan
 		err := srv.Shutdown(shutdownCtx)
 		if err != nil {
-			panic("failed to shutdown gracefully")
+			log.Panic().Err(err).Msg("failed to shutdown gracefully")
 		}
 	}(server)
 }

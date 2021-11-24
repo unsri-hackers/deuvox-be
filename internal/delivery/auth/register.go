@@ -3,6 +3,7 @@ package auth
 import (
 	"deuvox/internal/model"
 	"deuvox/pkg/derror"
+	"deuvox/pkg/log"
 	"deuvox/pkg/response"
 	"encoding/json"
 	"net/http"
@@ -35,6 +36,7 @@ func (d *Delivery) Register(w http.ResponseWriter, r *http.Request) {
 
 	res, err := d.auth.Register(ctx, body)
 	if err != nil {
+		log.Error().Err(err).Msgf("%s", r.RequestURI)
 		e, ok := err.(*derror.DError)
 		if !ok {
 			response.Write(w, http.StatusInternalServerError, "Our server encounter a problem.", nil, "BAD-ERROR")

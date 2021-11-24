@@ -6,10 +6,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/rs/zerolog/log"
+	"deuvox/pkg/log"
 )
 
 func main() {
+
+	log.New()
 	serverCfg := app.AppConfig{
 		Host:            os.Getenv("SERVER_HOST"),
 		Port:            os.Getenv("SERVER_PORT"),
@@ -27,7 +29,7 @@ func main() {
 	log.Info().Msg("get connection to postgres")
 	postgre, err := postgres.NewPG(postgresCfg)
 	if err != nil {
-		log.Error().Err(err).Stack().Msg("failed to connect to postgres")
+		log.Error().Err(err).Msg("failed to connect to postgres")
 	}
 
 	app := app.New(serverCfg, postgre)
